@@ -2,6 +2,7 @@ package tricycle.bookHub.model;
 
 public enum Statut {
 
-    RESERVE,
-    INDISPONIBLE
+    EN_COURS,
+    TERMINE,
+    RETARD
 }
