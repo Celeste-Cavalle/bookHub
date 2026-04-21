@@ -14,21 +14,11 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Loan {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "loanDate")
-    private Date loanDate;
-
-    @Column(name = "returnDate")
-    private Date returnDate;
-
-    @NotNull
-    @Column(name = "status")
-    private Statut status;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
@@ -37,5 +27,17 @@ public class Loan {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @NotNull
+    @Column(name = "date")
+    private Date date;
+
+    @NotBlank
+    @Column(name = "comment")
+    private String comment;
+
+    @NotNull
+    @Column(name = "rating")
+    private int rating;
 
 }
