@@ -35,18 +35,18 @@ public class Book {
     private String ISBN;
 
     @NotBlank
-    @Column(name = "couverture")
-    private String couverture;
+    @Column(name = "cover")
+    private String cover;
 
     @Column(name = "available")
     private boolean isAvailable;
 
-    @Column(name = "etat")
+    @Column(name = "state")
     @NotNull
-    private Etat etat;
+    private Etat state;
 
-    @OneToMany
-    @JoinColumn(name = "loan_id")
-    private Loan loan;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }
