@@ -1,10 +1,12 @@
 package tricycle.bookHub.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tricycle.bookHub.model.User;
 import tricycle.bookHub.service.UserService;
 
+import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,23 +21,36 @@ public class UserController {
     }
 
     @GetMapping("/api/users/{id}")
-    public User getUserById(@PathVariable Long id){
-        return service.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id){
+        User user = service.getUserById(id);
+        if(user != null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/api/users")
-    public User addUser(@RequestBody User user){
-        return service.addUser(user);
+    public ResponseEntity<User> addUser(@RequestBody User user){
+        User savedUser = service.addUser(user);
+        URI location = URI.create("/api/userq/" + savedUser.getId());
+        return ResponseEntity.created(location).body(savedUser);
     }
 
     @PutMapping("api/users/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user){
-        return service.updateUser(user, id);
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
+        User updatedUser;
+        try {
+            updatedUser = service.updateUser(user, id);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("api/users/{id}")
-    public void deleteUser(@PathVariable Long id){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         service.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
 
