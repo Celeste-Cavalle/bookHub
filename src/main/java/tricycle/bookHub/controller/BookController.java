@@ -1,10 +1,12 @@
 package tricycle.bookHub.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tricycle.bookHub.model.Book;
 import tricycle.bookHub.service.BookService;
 
+import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,8 +21,12 @@ public class BookController {
     }
 
     @GetMapping("/api/books/{id}")
-    public Book getBookById(@PathVariable Long id){
-        return service.getBookById(id);
+    public ResponseEntity<Book> getBookById(@PathVariable Long id){
+        Book book = service.getBookById(id);
+        if(book != null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(book);
     }
 
     // TODO faire la méthode de recherche textuelle
@@ -31,18 +37,23 @@ public class BookController {
 //    }
 
     @PostMapping("/api/books")
-    public Book addBook(Book book){
-        return service.addBook(book);
+    public ResponseEntity<Book> addBook(@RequestBody Book book){
+        Book savedBook = service.addBook(book);
+        URI location = URI.create("/api/books/" + savedBook.getId());
+        return ResponseEntity.created(location).body(savedBook);
     }
 
-    @PutMapping("api/books/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book book){
-        return service.updateBook(book, id);
+    @PutMapping("/api/books/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book){
+        Book updatedBook = service.updateBook(book, id);
+        return ResponseEntity.ok(updatedBook);
     }
 
-    @DeleteMapping("api/books/{id}")
-    public void deleteBook(@PathVariable Long id){
+    @DeleteMapping("/api/books/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id){
         service.deleteBookById(id);
+        return ResponseEntity.noContent().build();
+
     }
 
 
