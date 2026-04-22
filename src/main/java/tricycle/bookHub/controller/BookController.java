@@ -23,6 +23,7 @@ public class BookController {
         return service.getBookById(id);
     }
 
+    // TODO faire la méthode de recherche textuelle
 //    @GetMapping("/api/books/search")
 //    public List<Book> getBooksBySearch(){
 //        // @pathVariable ?
