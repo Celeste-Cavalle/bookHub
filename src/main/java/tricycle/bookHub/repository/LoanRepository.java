@@ -9,6 +9,8 @@ import tricycle.bookHub.model.Statut;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.List;
+
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     // RG-LOAN-01 : compter les emprunts actifs d'un user
@@ -19,6 +21,8 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     // RG-LOAN-04 : vérifier si le même livre est déjà emprunté EN_COURS par ce user
     boolean existsByUserIdAndBooksIdAndStatus(Long userId, Long bookId, Statut status);
+
+    List<Loan> findByUserId(Long userId);
 
     Optional<Loan> findByBooksIdAndStatusIn(Long bookId, List<Statut> statuts);
 }
