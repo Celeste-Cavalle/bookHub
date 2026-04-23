@@ -2,6 +2,7 @@ package tricycle.bookHub.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tricycle.bookHub.model.Book;
 import tricycle.bookHub.service.BookService;
@@ -37,6 +38,7 @@ public class BookController {
 //    }
 
     @PostMapping("/api/books")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> addBook(@RequestBody Book book){
         Book savedBook = service.addBook(book);
         URI location = URI.create("/api/books/" + savedBook.getId());
@@ -44,12 +46,14 @@ public class BookController {
     }
 
     @PutMapping("/api/books/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book){
         Book updatedBook = service.updateBook(book, id);
         return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("api/books/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id){
         service.deleteBookById(id);
         return ResponseEntity.noContent().build();

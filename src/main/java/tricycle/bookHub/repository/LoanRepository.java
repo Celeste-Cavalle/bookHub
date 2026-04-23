@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import tricycle.bookHub.model.Loan;
 import tricycle.bookHub.model.Statut;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,10 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     boolean existsByUserIdAndBooksIdAndStatus(Long userId, Long bookId, Statut status);
 
     List<Loan> findByUserId(Long userId);
+
+    List<Loan> findByStatusAndReturnDateBefore(Statut status, Date date);
+
+    boolean existsByBooksIdAndStatusIn(Long bookId, List<Statut> statuts);
 
     Optional<Loan> findByBooksIdAndStatusIn(Long bookId, List<Statut> statuts);
 }

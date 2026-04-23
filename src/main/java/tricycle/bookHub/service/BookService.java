@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tricycle.bookHub.exception.BookNotFoundException;
 import tricycle.bookHub.model.Book;
+import tricycle.bookHub.model.Statut;
 import tricycle.bookHub.repository.BookRepository;
+import tricycle.bookHub.repository.LoanRepository;
 
 import java.util.List;
 
@@ -13,23 +15,24 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository repository;
+    private final LoanRepository loanRepository;
 
-    public Book addBook(Book book){
-       return repository.save(book);
+    public Book addBook(Book book) {
+        return repository.save(book);
     }
 
-    public List<Book> getAllBooks(){
-       return repository.findAll();
+    public List<Book> getAllBooks() {
+        return repository.findAll();
     }
 
-    public Book getBookById(long id){
+    public Book getBookById(long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Ce livre avec cet id: "+ id + " n'existe pas"));
+                .orElseThrow(() -> new BookNotFoundException("Ce livre avec cet id: " + id + " n'existe pas"));
     }
 
-    public Book updateBook(Book book, Long id){
+    public Book updateBook(Book book, Long id) {
         Book existingBook = repository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Ce livre avec cet id: "+ id + " n'existe pas"));
+                .orElseThrow(() -> new BookNotFoundException("Ce livre avec cet id: " + id + " n'existe pas"));
 
         existingBook.setTitle(book.getTitle());
         existingBook.setAuthor(book.getAuthor());
@@ -43,11 +46,13 @@ public class BookService {
         return repository.save(existingBook);
     }
 
-    public void deleteBookById(long id){
-        Book existingBook = repository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Ce livre avec cet id: "+ id + " n'existe pas"));
-
-        repository.delete(existingBook);
+    public void deleteBookById(Long id) {
+        boolean hasActiveLoans = loanRepository.existsByBooksIdAndStatusIn(
+                id, List.of(Statut.EN_COURS, Statut.RETARD)
+        );
+        if (hasActiveLoans) {
+            throw new IllegalStateException("Impossible de supprimer un livre avec des emprunts actifs");
+        }
+        repository.deleteById(id);
     }
-
- }
+}
