@@ -5,5 +5,6 @@ public enum Etat {
     EMPRUNTE,
     EMPRUNTABLE,
     INDISPONIBLE,
-    RESERVE
+    RESERVE,
+    RETARD
 }
