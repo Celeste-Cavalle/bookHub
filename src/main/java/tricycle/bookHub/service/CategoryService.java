@@ -1,13 +1,14 @@
 package tricycle.bookHub.service;
 
 import org.springframework.stereotype.Service;
+import tricycle.bookHub.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
 
-    private CategoryService repository;
+    private CategoryRepository repository;
 
-    public CategoryService(CategoryService repository) {
+    public CategoryService(CategoryRepository repository) {
         this.repository = repository;
     }
 

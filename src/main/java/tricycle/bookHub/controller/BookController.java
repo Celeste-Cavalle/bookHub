@@ -1,6 +1,8 @@
 package tricycle.bookHub.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tricycle.bookHub.model.Book;
 import tricycle.bookHub.service.BookService;
@@ -31,8 +33,8 @@ public class BookController {
 //    }
 
     @PostMapping("/api/books")
-    public Book addBook(Book book){
-        return service.addBook(book);
+    public ResponseEntity<Book> addBook(@RequestBody Book book){
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addBook(book));
     }
 
     @PutMapping("api/books/{id}")
@@ -41,8 +43,9 @@ public class BookController {
     }
 
     @DeleteMapping("api/books/{id}")
-    public void deleteBook(@PathVariable Long id){
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id){
         service.deleteBookById(id);
+        return ResponseEntity.noContent().build();
     }
 
 
