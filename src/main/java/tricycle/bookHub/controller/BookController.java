@@ -23,7 +23,7 @@ public class BookController {
     @GetMapping("/api/books/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id){
         Book book = service.getBookById(id);
-        if(book != null){
+        if(book == null){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(book);

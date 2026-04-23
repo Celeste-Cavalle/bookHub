@@ -2,58 +2,135 @@ package tricycle.bookHub.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tricycle.bookHub.exception.LoanNotFoundException;
-import tricycle.bookHub.model.Loan;
-import tricycle.bookHub.model.Statut;
+import org.springframework.transaction.annotation.Transactional;
+import tricycle.bookHub.dto.LoanRequest;
+import tricycle.bookHub.dto.LoanResponse;
+import tricycle.bookHub.model.*;
+import tricycle.bookHub.repository.BookRepository;
 import tricycle.bookHub.repository.LoanRepository;
+import tricycle.bookHub.repository.UserRepository;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class LoanService {
 
-    private final LoanRepository repository;
+    private static final int MAX_LOANS     = 3;
+    private static final int LOAN_DURATION = 14;
 
-    public List<Loan> getAllLoans(){ return repository.findAll();}
+    private final LoanRepository loanRepository;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
-    public Loan addLoan(Loan loan){
-        return repository.save(loan);
+    @Transactional
+    public LoanResponse createLoan(LoanRequest request) {
+
+        Book book = bookRepository.findById(request.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("Livre introuvable"));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+        // RG-LOAN-03 : bloqué si retard
+        if (loanRepository.existsByUserIdAndStatus(user.getId(), Statut.RETARD)) {
+            throw new IllegalStateException("RG-LOAN-03 : emprunt bloqué, l'utilisateur a un retard en cours");
+        }
+
+        // RG-LOAN-01 : max 3 emprunts actifs
+        if (loanRepository.countByUserIdAndStatus(user.getId(), Statut.EN_COURS) >= MAX_LOANS) {
+            throw new IllegalStateException("RG-LOAN-01 : l'utilisateur a atteint le maximum de 3 emprunts simultanés");
+        }
+
+        // Livre disponible
+        if (!book.isAvailable() || book.getState() != Etat.EMPRUNTABLE) {
+            throw new IllegalStateException("Ce livre n'est pas disponible à l'emprunt");
+        }
+
+        // RG-LOAN-04 : même livre déjà en cours
+        if (loanRepository.existsByUserIdAndBooksIdAndStatus(user.getId(), book.getId(), Statut.EN_COURS)) {
+            throw new IllegalStateException("RG-LOAN-04 : ce livre est déjà emprunté par cet utilisateur");
+        }
+
+        // Création de l'emprunt
+        Date loanDate   = new Date();
+        Date returnDate = addDays(loanDate, LOAN_DURATION);
+
+        Loan loan = new Loan();
+        loan.setBooks(book);
+        loan.setUser(user);
+        loan.setLoanDate(loanDate);
+        loan.setReturnDate(returnDate);
+        loan.setStatus(Statut.EN_COURS);
+
+        // Mise à jour du livre
+        book.setState(Etat.EMPRUNTE);
+        book.setAvailable(false);
+        bookRepository.save(book);
+
+        Loan saved = loanRepository.save(loan);
+
+        return new LoanResponse(
+                saved.getId(),
+                book.getTitle(),
+                user.getEmail(),
+                saved.getLoanDate(),
+                saved.getReturnDate(),
+                saved.getStatus()
+        );
     }
 
-    public List<Loan> getLoanByUserID(Long userId){
-        return repository.findByUserId(userId);
+    private Date addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DAY_OF_MONTH, days);
+        return cal.getTime();
     }
 
-    public Loan getLoanById(Long id){
-        return repository.findById(id).
-                orElseThrow(() -> new LoanNotFoundException("Cet emprunt avec cet id: "+ id + " n'existe pas"));
+    @Transactional
+    public LoanResponse returnLoan(Long id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Emprunt introuvable"));
+
+        if (loan.getStatus() == Statut.TERMINE) {
+            throw new IllegalStateException("Cet emprunt est déjà terminé");
+        }
+
+        loan.setStatus(Statut.TERMINE);
+        loan.setReturnDate(new Date());
+
+        Book book = loan.getBooks();
+        book.setState(Etat.EMPRUNTABLE);
+        book.setAvailable(true);
+        bookRepository.save(book);
+
+        loanRepository.save(loan);
+
+        return new LoanResponse(
+                loan.getId(),
+                book.getTitle(),
+                loan.getUser().getEmail(),
+                loan.getLoanDate(),
+                loan.getReturnDate(),
+                loan.getStatus()
+        );
     }
 
-    public Loan updateLoan(Loan loan, Long id){
-        Loan existingLoan = repository.findById(id)
-                .orElseThrow(() -> new LoanNotFoundException("Cet emprunt avec cet id: "+ id + " n'existe pas"));
+    public LoanResponse getActiveLoanByBook(Long bookId) {
+        Loan loan = loanRepository.findByBooksIdAndStatusIn(
+                bookId,
+                List.of(Statut.EN_COURS, Statut.RETARD)
+        ).orElseThrow(() -> new IllegalArgumentException("Aucun emprunt actif pour ce livre"));
 
-        existingLoan.setLoanDate(loan.getLoanDate());
-        existingLoan.setReturnDate(loan.getReturnDate());
-        existingLoan.setStatus(loan.getStatus());
-        existingLoan.setBooks(loan.getBooks());
-        existingLoan.setUser(loan.getUser());
-
-        return repository.save(existingLoan);
-    }
-
-    public Loan markLoanAsReturned(Long id){
-        Loan existingLoan = repository.findById(id)
-                .orElseThrow(() -> new LoanNotFoundException("Cet emprunt avec cet id: "+ id + " n'existe pas"));
-
-        existingLoan.setStatus(Statut.TERMINE);
-
-        return repository.save(existingLoan);
-    }
-
-    public void deleteLoan(Long id){
-        repository.findById(id)
-                .orElseThrow(() -> new LoanNotFoundException("Cet emprunt avec cet id: "+ id + " n'existe pas"));
+        return new LoanResponse(
+                loan.getId(),
+                loan.getBooks().getTitle(),
+                loan.getUser().getEmail(),
+                loan.getLoanDate(),
+                loan.getReturnDate(),
+                loan.getStatus()
+        );
     }
 }

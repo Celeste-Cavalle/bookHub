@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/books").permitAll()
                         .requestMatchers("/api/books/{id}").permitAll()
                         .requestMatchers("/api/books/search").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

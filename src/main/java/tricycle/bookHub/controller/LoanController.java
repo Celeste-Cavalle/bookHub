@@ -1,53 +1,38 @@
 package tricycle.bookHub.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tricycle.bookHub.model.Loan;
-import tricycle.bookHub.model.User;
+import tricycle.bookHub.dto.LoanRequest;
+import tricycle.bookHub.dto.LoanResponse;
 import tricycle.bookHub.service.LoanService;
 
-import java.net.URI;
-import java.util.List;
-
-@RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/loans")
+@RequiredArgsConstructor
 public class LoanController {
 
-    private final LoanService service;
+    private final LoanService loanService;
 
-    @PostMapping("/api/loans")
-    public ResponseEntity<Loan> addLoan(@RequestBody Loan loan){
-        Loan savedLoan = service.addLoan(loan);
-        URI location = URI.create("/api/loans/" + savedLoan.getId());
-
-        return ResponseEntity.created(location).body(savedLoan);
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LoanResponse> createLoan(@Valid @RequestBody LoanRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(loanService.createLoan(request));
     }
 
-    @GetMapping("/api/loans/my")
-    public ResponseEntity<List<Loan>> getLoansById(@AuthenticationPrincipal User user){
-        if (user == null){
-            return ResponseEntity.status(401).build();
-        }
-
-        Long userId = user.getId();
-        List<Loan> loans = service.getLoanByUserID(userId);
-        return ResponseEntity.ok(loans);
+    @PutMapping("/{id}/return")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LoanResponse> returnLoan(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.returnLoan(id));
     }
 
-    //ROLE bibliothécaire
-    @GetMapping("/api/loans")
-    public ResponseEntity<List<Loan>> getAllLoans(){
-        List<Loan> loans = service.getAllLoans();
-        return ResponseEntity.ok(loans);
+    @GetMapping("/active/book/{bookId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LoanResponse> getActiveLoanByBook(@PathVariable Long bookId) {
+        return ResponseEntity.ok(loanService.getActiveLoanByBook(bookId));
     }
 
-    //ROLE bibliothécaire
-    //pour passer de en cours à retourner
-    @PutMapping("/api/loans/{id}/return")
-    public ResponseEntity<Loan> returnLoan(@PathVariable Long id){
-        Loan updatedLoan = service.markLoanAsReturned(id);
-       return ResponseEntity.ok(updatedLoan);
-    }
 }
