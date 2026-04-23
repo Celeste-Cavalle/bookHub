@@ -133,4 +133,8 @@ public class LoanService {
                 loan.getStatus()
         );
     }
+
+    public List<Loan> getMyLoans(Long userId){
+        return loanRepository.findByUserId(userId);
+    }
 }

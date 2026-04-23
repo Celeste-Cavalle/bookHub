@@ -5,10 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tricycle.bookHub.dto.LoanRequest;
 import tricycle.bookHub.dto.LoanResponse;
+import tricycle.bookHub.model.Loan;
+import tricycle.bookHub.model.User;
 import tricycle.bookHub.service.LoanService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -33,6 +38,11 @@ public class LoanController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<LoanResponse> getActiveLoanByBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(loanService.getActiveLoanByBook(bookId));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<Loan>> getMyLoans(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(loanService.getMyLoans(user.getId()));
     }
 
 }
