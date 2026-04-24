@@ -41,8 +41,8 @@ public class BookService {
         existingBook.setDescription(book.getDescription());
         existingBook.setISBN(book.getISBN());
         existingBook.setCover(book.getCover());
-        existingBook.setAvailable(true);
-        existingBook.setState(Etat.EMPRUNTABLE);
+        existingBook.setState(book.getState());
+        existingBook.setAvailable(book.getState() == Etat.EMPRUNTABLE);
         existingBook.setCategory(book.getCategory());
 
         return repository.save(existingBook);
@@ -55,6 +55,7 @@ public class BookService {
         if (hasActiveLoans) {
             throw new IllegalStateException("Impossible de supprimer un livre avec des emprunts actifs");
         }
+        loanRepository.deleteByBooksId(id);
         repository.deleteById(id);
     }
 }

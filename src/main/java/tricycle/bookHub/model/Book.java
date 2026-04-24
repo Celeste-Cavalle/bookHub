@@ -41,6 +41,7 @@ public class Book {
     @Column(name = "available")
     private boolean isAvailable;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
     @NotNull
     private Etat state;
