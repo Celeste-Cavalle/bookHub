@@ -21,8 +21,8 @@ public class Review {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book books;
+    @JoinColumn(name = "book_id", foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE"))
+    private Book book;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

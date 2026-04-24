@@ -44,9 +44,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/books").permitAll()
                         .requestMatchers("/api/books/{id}").permitAll()
                         .requestMatchers("/api/books/search").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
