@@ -26,6 +26,7 @@ public class Loan {
     @Column(name = "returnDate")
     private Date returnDate;
 
+    @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "status")
     private Statut status;
