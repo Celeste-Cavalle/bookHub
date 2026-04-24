@@ -8,6 +8,7 @@ import tricycle.bookHub.dto.LoanResponse;
 import tricycle.bookHub.model.*;
 import tricycle.bookHub.repository.BookRepository;
 import tricycle.bookHub.repository.LoanRepository;
+import tricycle.bookHub.repository.ReservationRepository;
 import tricycle.bookHub.repository.UserRepository;
 
 import java.util.Calendar;
@@ -24,6 +25,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public LoanResponse createLoan(LoanRequest request) {
@@ -69,6 +71,8 @@ public class LoanService {
         book.setState(Etat.EMPRUNTE);
         book.setAvailable(false);
         bookRepository.save(book);
+
+        reservationRepository.deleteByBookId(book.getId());
 
         Loan saved = loanRepository.save(loan);
 
