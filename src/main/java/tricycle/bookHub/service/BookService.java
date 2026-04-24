@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tricycle.bookHub.exception.BookNotFoundException;
 import tricycle.bookHub.model.Book;
+import tricycle.bookHub.model.Etat;
 import tricycle.bookHub.model.Statut;
 import tricycle.bookHub.repository.BookRepository;
 import tricycle.bookHub.repository.LoanRepository;
@@ -18,6 +19,7 @@ public class BookService {
     private final LoanRepository loanRepository;
 
     public Book addBook(Book book) {
+        book.setAvailable(book.getState() == Etat.EMPRUNTABLE);
         return repository.save(book);
     }
 
@@ -39,8 +41,8 @@ public class BookService {
         existingBook.setDescription(book.getDescription());
         existingBook.setISBN(book.getISBN());
         existingBook.setCover(book.getCover());
-        existingBook.setAvailable(book.isAvailable());
-        existingBook.setState(book.getState());
+        existingBook.setAvailable(true);
+        existingBook.setState(Etat.EMPRUNTABLE);
         existingBook.setCategory(book.getCategory());
 
         return repository.save(existingBook);
