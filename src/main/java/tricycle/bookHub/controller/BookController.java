@@ -31,11 +31,15 @@ public class BookController {
     }
 
     // TODO faire la méthode de recherche textuelle
-//    @GetMapping("/api/books/search")
-//    public List<Book> getBooksBySearch(){
-//        // @pathVariable ?
-//        return service.gépafasfaitlaméthode;
-//    }
+    @GetMapping("/api/books/search")
+    public List<Book> searchBooks(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean available,
+            @RequestParam(required = false, defaultValue = "title") String sort
+    ) {
+        return service.searchBooks(query, categoryId, available, sort);
+    }
 
     @PostMapping("/api/books")
     @PreAuthorize("hasRole('ADMIN')")
