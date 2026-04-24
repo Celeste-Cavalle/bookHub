@@ -9,6 +9,7 @@ import tricycle.bookHub.model.Statut;
 import tricycle.bookHub.repository.BookRepository;
 import tricycle.bookHub.repository.LoanRepository;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -46,6 +47,22 @@ public class BookService {
         existingBook.setCategory(book.getCategory());
 
         return repository.save(existingBook);
+    }
+
+    public List<Book> searchBooks(String query, Long categoryId, Boolean available, String sort) {
+        List<Book> results = repository.search(
+                (query != null && !query.isBlank()) ? query : null,
+                categoryId,
+                available
+        );
+
+        Comparator<Book> comparator = switch (sort != null ? sort : "title") {
+            case "author" -> Comparator.comparing(Book::getAuthor, String.CASE_INSENSITIVE_ORDER);
+            default -> Comparator.comparing(Book::getTitle,  String.CASE_INSENSITIVE_ORDER);
+        };
+
+        results.sort(comparator);
+        return results;
     }
 
     public void deleteBookById(Long id) {

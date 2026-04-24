@@ -1,6 +1,8 @@
 package tricycle.bookHub.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tricycle.bookHub.model.Book;
 
@@ -20,8 +22,18 @@ public interface BookRepository  extends JpaRepository<Book, Long> {
 
     List<Book> findByAvailable(Boolean isAvailable);
 
-
-// si la première ne fonctionne pas
-//    @Query("SELECT b FROM Book b WHERE b.category.id =:categoryId ")
-//    List<Book> findByCategory(Long category_id);
+    @Query("""
+    SELECT b FROM Book b
+    WHERE (:query IS NULL OR
+           LOWER(b.title)  LIKE LOWER(CONCAT('%', :query, '%')) OR
+           LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')) OR
+           LOWER(b.ISBN)   LIKE LOWER(CONCAT('%', :query, '%')))
+    AND   (:categoryId IS NULL OR b.category.id = :categoryId)
+    AND   (:available  IS NULL OR b.isAvailable = :available)
+""")
+    List<Book> search(
+            @Param("query")      String query,
+            @Param("categoryId") Long categoryId,
+            @Param("available")  Boolean available
+    );
 }
