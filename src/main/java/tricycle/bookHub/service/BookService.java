@@ -19,8 +19,7 @@ public class BookService {
     private final LoanRepository loanRepository;
 
     public Book addBook(Book book) {
-        book.setState(Etat.EMPRUNTABLE);
-        book.setAvailable(true);
+        book.setAvailable(book.getState() == Etat.EMPRUNTABLE);
         return repository.save(book);
     }
 
@@ -42,8 +41,8 @@ public class BookService {
         existingBook.setDescription(book.getDescription());
         existingBook.setISBN(book.getISBN());
         existingBook.setCover(book.getCover());
-        existingBook.setAvailable(book.isAvailable());
-        existingBook.setState(book.getState());
+        existingBook.setAvailable(true);
+        existingBook.setState(Etat.EMPRUNTABLE);
         existingBook.setCategory(book.getCategory());
 
         return repository.save(existingBook);
