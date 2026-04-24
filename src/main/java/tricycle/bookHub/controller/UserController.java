@@ -42,7 +42,6 @@ public class UserController {
         try {
             updatedUser = service.updateUser(user, id);
         } catch (Exception e){
-            System.out.println("PROBLEMEEEEEE : " + e);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedUser);
