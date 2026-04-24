@@ -29,12 +29,11 @@ public class UserService {
         User existingUser = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Cette personne avec cet id: "+ id + " n'existe pas"));
 
-        existingUser.setFirstName(user.getFirstName());
-        existingUser.setLastName(user.getLastName());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPhone(user.getPhone());
-        existingUser.setRole(user.getRole());
+        if (user.getFirstName() != null) existingUser.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) existingUser.setLastName(user.getLastName());
+        if (user.getPassword() != null) existingUser.setPassword(user.getPassword());
+        if (user.getEmail() != null) existingUser.setEmail(user.getEmail());
+        if (user.getPhone() != null) existingUser.setPhone(user.getPhone());
 
         return repository.save(existingUser);
     }
