@@ -3,7 +3,9 @@
 Backend de l'application **BookHub**, développé avec **Java** et **Spring Boot**. Cette API REST gère l'ensemble des fonctionnalités métier de la plateforme : gestion des utilisateurs, authentification, catalogue de livres, emprunts, réservations, avis et conformité RGPD.
 
 ## Diagrammes du projet
+
 [BookHub Documentation](docs/diagrams/bookhub-uml.pdf)
+
 ---
 
 ## Fonctionnalités principales
