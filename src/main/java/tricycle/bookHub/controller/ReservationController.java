@@ -39,4 +39,10 @@ public class ReservationController {
             @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(service.getMyReservations(user.getId()));
     }
+
+    @GetMapping("/active/book/{bookId}")
+    public ResponseEntity<ReservationResponse> getActiveByBook(@PathVariable Long bookId) {
+        return ResponseEntity.ok(service.getActiveByBook(bookId));
+    }
+
 }

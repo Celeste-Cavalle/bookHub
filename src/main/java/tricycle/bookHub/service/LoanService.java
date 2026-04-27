@@ -106,8 +106,15 @@ public class LoanService {
         loan.setReturnDate(new Date());
 
         Book book = loan.getBooks();
-        book.setState(Etat.EMPRUNTABLE);
-        book.setAvailable(true);
+        boolean hasReservation = reservationRepository.existsByBookId(book.getId());
+
+        if (hasReservation) {
+            book.setState(Etat.RESERVE);
+            book.setAvailable(false);
+        } else {
+            book.setState(Etat.EMPRUNTABLE);
+            book.setAvailable(true);
+        }
         bookRepository.save(book);
 
         loanRepository.save(loan);

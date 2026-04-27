@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import tricycle.bookHub.model.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -21,4 +22,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     // Supprimer la réservation d'un livre (quand transformée en emprunt)
     void deleteByBookId(Long bookId);
+
+    Optional<Reservation> findByBookId(Long bookId);
 }

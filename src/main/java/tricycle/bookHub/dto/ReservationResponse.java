@@ -2,6 +2,7 @@ package tricycle.bookHub.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import tricycle.bookHub.model.Etat;
 
 import java.util.Date;
 
@@ -12,4 +13,6 @@ public class ReservationResponse {
     private String bookTitle;
     private String bookCover;
     private Date reservationDate;
+    private Etat bookState;
+    private Long userId;
 }
