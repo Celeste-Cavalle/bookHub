@@ -55,8 +55,6 @@ public class ReservationService {
         reservation.setUser(user);
         reservation.setReservationDate(new Date());
 
-        book.setState(Etat.RESERVE);
-        book.setAvailable(false);
         bookRepository.save(book);
 
         Reservation saved = reservationRepository.save(reservation);
@@ -65,7 +63,9 @@ public class ReservationService {
                 saved.getId(),
                 book.getTitle(),
                 book.getCover(),
-                saved.getReservationDate()
+                saved.getReservationDate(),
+                book.getState(),
+                saved.getUser().getId()
         );
     }
 
@@ -79,12 +79,20 @@ public class ReservationService {
             throw new IllegalStateException("Vous ne pouvez pas annuler la réservation d'un autre utilisateur");
         }
 
-        Book book = reservation.getBook();
-        book.setState(Etat.EMPRUNTABLE);
-        book.setAvailable(true);
-        bookRepository.save(book);
-
         reservationRepository.delete(reservation);
+    }
+
+    public ReservationResponse getActiveByBook(Long bookId) {
+        return reservationRepository.findByBookId(bookId)
+                .map(r -> new ReservationResponse(
+                        r.getId(),
+                        r.getBook().getTitle(),
+                        r.getBook().getCover(),
+                        r.getReservationDate(),
+                        r.getBook().getState(),
+                        r.getUser().getId()
+                ))
+                .orElseThrow(() -> new IllegalArgumentException("Aucune réservation active pour ce livre"));
     }
 
     public List<ReservationResponse> getMyReservations(Long userId) {
@@ -93,7 +101,9 @@ public class ReservationService {
                         r.getId(),
                         r.getBook().getTitle(),
                         r.getBook().getCover(),
-                        r.getReservationDate()
+                        r.getReservationDate(),
+                        r.getBook().getState(),
+                        r.getUser().getId()
                 ))
                 .toList();
     }
