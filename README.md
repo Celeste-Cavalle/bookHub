@@ -4,7 +4,7 @@ Backend de l'application **BookHub**, développé avec **Java** et **Spring Boot
 
 ## Diagrammes du projet
 
-[BookHub Documentation](docs/diagrams/bookhub-uml.pdf)
+[BookHub Documentation](docs/diagrams/BookHubDocumentation.pdf)
 
 ---
 
