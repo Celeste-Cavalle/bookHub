@@ -77,6 +77,13 @@ public class ReservationService {
         if (!reservation.getUser().getId().equals(userId)) {
             throw new IllegalStateException("Vous ne pouvez pas annuler la réservation d'un autre utilisateur");
         }
+        Book book = reservation.getBook();
+
+        if (book.getState() == Etat.RESERVE) {
+            book.setState(Etat.EMPRUNTABLE);
+            book.setAvailable(true);
+            bookRepository.save(book);
+        }
 
         reservationRepository.delete(reservation);
     }
