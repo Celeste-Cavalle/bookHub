@@ -31,7 +31,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     void deleteByBooksId(Long bookId);
 
-    Optional<Loan> findByBooksIdAndStatusIn(Long bookId, List<Statut> statuts);
+    List<Loan> findByBooksIdAndStatusIn(Long bookId, List<Statut> statuts);
 
     boolean existsByBooksIdAndUserIdAndStatus(Long bookId, Long userId, Statut status);
 }

@@ -131,12 +131,7 @@ class UserServiceTest {
 
     // ===================== deleteUser =====================
 
-    /**
-     * ⚠️ BUG DOCUMENTÉ : UserService.deleteUser() appelle findById() pour vérifier
-     * l'existence mais n'appelle JAMAIS deleteById(). L'utilisateur n'est donc
-     * jamais supprimé en base. Ce test documente le comportement ATTENDU.
-     * Fix : ajouter repository.deleteById(id) après le findById.
-     */
+
     @Test
     void deleteUser_shouldCallDeleteById_whenUserExists() {
         lenient().when(userRepository.findById(1L)).thenReturn(Optional.of(user));
