@@ -41,6 +41,7 @@ public class UserService {
     public void deleteUser(Long id){
         repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Cette personne avec cet id: "+ id + " n'existe pas"));
+        repository.deleteById(id);
     }
 
 
