@@ -7,8 +7,8 @@ import tricycle.bookHub.repository.CategoryRepository;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class CategoryService {
 
     private final CategoryRepository repository;

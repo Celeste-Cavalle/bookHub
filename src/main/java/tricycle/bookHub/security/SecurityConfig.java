@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/books/{id}").permitAll()
                         .requestMatchers("/api/books/search").permitAll()
+                        .requestMatchers("/api/categories").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/*/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/*/reviews/average").permitAll()
