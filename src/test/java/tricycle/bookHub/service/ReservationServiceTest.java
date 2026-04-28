@@ -69,17 +69,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void create_shouldThrow_whenBookIsAvailable() {
-        book.setState(Etat.EMPRUNTABLE);
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        assertThatThrownBy(() -> reservationService.create(1L, 1L))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("disponible, empruntez-le directement");
-    }
-
-    @Test
     void create_shouldThrow_whenBookAlreadyReservedByOther() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));

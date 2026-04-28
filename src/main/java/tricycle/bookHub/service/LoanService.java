@@ -12,6 +12,7 @@ import tricycle.bookHub.repository.ReservationRepository;
 import tricycle.bookHub.repository.UserRepository;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -130,10 +131,17 @@ public class LoanService {
     }
 
     public LoanResponse getActiveLoanByBook(Long bookId) {
-        Loan loan = loanRepository.findByBooksIdAndStatusIn(
-                bookId,
-                List.of(Statut.EN_COURS, Statut.RETARD)
-        ).orElseThrow(() -> new IllegalArgumentException("Aucun emprunt actif pour ce livre"));
+        List<Loan> loans = loanRepository.findByBooksIdAndStatusIn(
+                bookId, List.of(Statut.EN_COURS, Statut.RETARD)
+        );
+
+        if (loans.isEmpty()) {
+            throw new IllegalArgumentException("Aucun emprunt actif pour ce livre");
+        }
+
+        Loan loan = loans.stream()
+                .max(Comparator.comparing(Loan::getLoanDate))
+                .orElseThrow();
 
         return new LoanResponse(
                 loan.getId(),

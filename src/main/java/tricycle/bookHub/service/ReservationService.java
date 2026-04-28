@@ -30,11 +30,6 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
 
-        // Le livre doit être indisponible pour être réservable
-        if (book.getState() == Etat.EMPRUNTABLE) {
-            throw new IllegalStateException("Ce livre est disponible, empruntez-le directement !");
-        }
-
         // Un seul user par livre
         if (reservationRepository.existsByBookId(bookId)) {
             throw new IllegalStateException("Ce livre est déjà réservé par un autre utilisateur");
@@ -55,6 +50,10 @@ public class ReservationService {
         reservation.setUser(user);
         reservation.setReservationDate(new Date());
 
+        if (book.getState() == Etat.EMPRUNTABLE) {
+            book.setState(Etat.RESERVE);
+            book.setAvailable(false);
+        }
         bookRepository.save(book);
 
         Reservation saved = reservationRepository.save(reservation);
