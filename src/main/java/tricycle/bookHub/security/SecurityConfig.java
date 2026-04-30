@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/books/search").permitAll()
                         .requestMatchers("/api/categories").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/loans/my").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/books/*/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/*/reviews/average").permitAll()
                         .requestMatchers("/api/loans/**").hasRole("ADMIN")
