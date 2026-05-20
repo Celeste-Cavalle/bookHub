@@ -25,7 +25,7 @@ Backend de l'application **BookHub**, développé avec **Java** et **Spring Boot
 ## Technologies utilisées
 
 * Java 21
-* Spring Boot 3
+* Spring Boot 4.0.5
 * Spring Security
 * Spring Data JPA
 * Hibernate
