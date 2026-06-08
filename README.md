@@ -167,8 +167,8 @@ java -jar target/bookhub-backend.jar
 
 ## Auteur
  
-Projet développé dans le cadre d'un projet p de l'ENI de la plateforme BookHub.
-Projet Réaliser par Celeste CAVALLIN, Sebastien LALOUE et Audrey PEHUET
+Projet développé dans le cadre d'un projet de l'ENI : La plateforme BookHub.
+Projet Réalisé par Celeste CAVALLIN, Sebastien LALOË et Audrey PEHUET
 
 ---
 
